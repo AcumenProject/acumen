@@ -19,6 +19,7 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	xmlns:ns2="http://www.w3.org/1999/xlink"
 >
+<!-- I'm from a clone! -->
 <!-- Make sure we generate DOCTYPE correctly, or IE8 will render everydting incorrectly -->
 <xsl:output 
 	medtod="html" 
