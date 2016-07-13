@@ -1,0 +1,25 @@
+#!/bin/bash
+
+function acumenSetConfig(){
+    if [ -n "$1" ]; then
+        echo 'cat '$1 | xmllint --shell config.xml | awk -F '[="]' '!/>/{print $(NF-1)}'
+    fi
+}
+
+DB_HOST=$(acumenSetConfig '//config/database/host/text()');
+DB_NAME=$(acumenSetConfig '//config/database/dbname/text()');
+DB_USER=$(acumenSetConfig '//config/database/user/basePath/text()');
+DB_PASS=$(acumenSetConfig '//config/database/pass/basePath/text()');
+
+BASE_PATH=$(acumenSetConfig '//config/basePath/text()');
+LOG_PATH="$BASE_PATH/log/";
+ACUMEN_DIR=$(acumenSetConfig '//config/acumenDir/text()');
+XSL_DIR=$(acumenSetConfig '//config/xslDir/text()');
+URL=$(acumenSetConfig '//config/url/text()');
+
+SOLR_CORE=$(acumenSetConfig '//config/solrCore/text()');
+SOLR_PORT=$(acumenSetConfig '//config/solrPort/text()');
+SOLR_HOST=$(acumenSetConfig '//config/solrHost/text()');
+SOLR_PATH=$(acumenSetConfig '//config/solrPath/text()');
+SOLR_URL=$(acumenSetConfig '//config/solrUrl/text()');
+

@@ -1,0 +1,4 @@
+dbHost=localhost:3306
+dbName=DB_NAME
+dbUser=DB_USER
+dbPass=DB_PASS

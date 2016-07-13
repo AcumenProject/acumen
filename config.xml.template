@@ -1,0 +1,30 @@
+<config>
+    <!-- Server directory settings -->
+    <basePath>/base/server/path</basePath>
+
+    <!-- Full Acumen install settings -->
+    <url>http://acumen.url.com</url>
+    <acumenDir>acumen</acumenDir>
+    <xslDir>assets/xsl</xslDir>
+
+    <!-- Content file and directory settings -->
+    <fileNameParentDelim>_</fileNameParentDelim>
+    <contentDir>/PATH/TO/CONTENT</contentDir>
+    <metadataDirName>Metadata</metadataDirName>
+    <transcriptDirName>Transcripts</transcriptDirName>
+
+    <!-- Solr settings -->
+    <solrCore>SOLR_CORE</solrCore>
+    <solrPort>8080</solrPort>
+    <solrHost>solr.server.com</solrHost>
+    <solrPath>/solr/</solrPath>
+    <solrUrl>https://solr.server.com:PORT/solr/</solrUrl>
+
+    <!-- Database settings -->
+    <database>
+        <host>localhost</host>
+        <dbname>DATABASE_NAME</dbname>
+        <user>DB_USER</user>
+        <pass>DB_PASS</pass>
+    </database>
+</config>

@@ -1,0 +1,96 @@
+<dataConfig>
+    <script><![CDATA[
+            function addfield(row){
+              var fieldName = row.get('authtype');
+              row.put(fieldName, row.get('authvalue'));
+              row.remove('authtype');
+              row.remove('authvalue');
+              return row;
+            }
+  ]]></script>
+    <dataSource name="dbs1" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://${dbHost}/${dbName}"
+                user="${dbUser}" password="${dbPass}"/>
+    <dataSource name="dbs2" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://${dbHost}/${dbName}"
+                user="${dbUser}" password="${dbPass}"/>
+
+    <document>
+        <entity name="file"
+                dataSource="dbs1"
+                transformer="TemplateTransformer,RegexTransformer"
+                query="SELECT id, parent_id, file_name FROM file WHERE status_type_id=1 AND found=1">
+            <field column="repo_loc" regex="(?=[^.]*)\..*" replaceWith="" sourceColName="file_name"/>
+            <entity name="parent" transformer="TemplateTransformer,RegexTransformer"  query="SELECT file_name FROM file WHERE id = ${file.parent_id}">
+                <field column="parent_loc" regex="(?=[^.]*)\..*" replaceWith="" sourceColName="file_name"/>
+            </entity>
+            <entity name="authority"
+                    transformer="script:addfield"
+                    query="SELECT at.type as authtype, a.value as authvalue FROM authority as a
+                LEFT JOIN authority_type as at ON at.id = a.authority_type_id
+                WHERE a.file_id=${file.id}">
+            </entity>
+            <entity name="first_asset" query="SELECT asset_type_id, name, thumb_path FROM asset WHERE file_id=${file.id} ORDER BY name LIMIT 1">
+                <field column="thumb_path" name="thumb_path"/>
+                <field column="name" name="asset_name"/>
+                <entity name="asset_type" query="SELECT type FROM asset_type WHERE id=${first_asset.asset_type_id}">
+                    <field column="type" name="asset_type"></field>
+                </entity>
+            </entity>
+            <entity name="tags" query="SELECT (SELECT value FROM tags WHERE id = ta.tag_id) as tag
+                                        FROM tags_assets as ta
+                                        LEFT JOIN asset as a ON a.name = ta.asset_name
+                                        WHERE a.name='${file.repo_loc}'">
+                <field column="tag" name="tag" />
+            </entity>
+            <entity name="transcripts" query="SELECT CAST(t.value AS CHAR(10000) CHARACTER SET utf8) as transcript FROM transcripts t
+                                                LEFT JOIN asset a ON a.name = t.asset_name
+                                                WHERE a.name = '${asset.name}' AND t.status >= 0
+                                                GROUP BY t.asset_name ORDER BY t.timestamp DESC">
+                <field column="transcript" name="transcript" />
+            </entity>
+            <entity name="ocr" query="SELECT CAST(t.value AS CHAR(10000) CHARACTER SET utf8) as ocr FROM transcripts t
+                                                LEFT JOIN asset a ON a.name = t.asset_name
+                                                WHERE a.name = '${asset.name}' AND t.status = -1
+                                                GROUP BY t.asset_name ORDER BY t.timestamp DESC">
+                <field column="ocr" name="ocr" />
+            </entity>
+        </entity>
+        <entity name="asset" dataSource="dbs2"
+                transformer="TemplateTransformer,RegexTransformer"
+                query="SELECT a.name as name, a.id as id, at.type as type, a.thumb_path as thumb_path, a.file_id as file_id FROM asset a
+                                        LEFT JOIN file f ON f.id=a.file_id
+                                        LEFT JOIN asset_type at ON at.id = a.asset_type_id
+                                        WHERE f.file_name NOT LIKE CONCAT(a.name, '.%') AND f.status_type_id=1 AND f.found=1">
+            <field column="type" name="link_type"></field>
+            <field column="id" name="id"></field>
+            <field column="file_id" name="parent_id"></field>
+            <field column="thumb_path" name="thumb_path"/>
+            <field column="name" name="repo_loc"/>
+            <field column="parent_title" name="parent_title"/>
+
+            <entity name="asset_parent" transformer="TemplateTransformer,RegexTransformer"  query="SELECT file_name FROM file WHERE id = ${asset.file_id}">
+                <field column="parent_loc" regex="(?=[^.]*)\..*" replaceWith="" sourceColName="file_name"/>
+            </entity>
+            <entity name="asset_transcript"
+                    transformer="TemplateTransformer,RegexTransformer"
+                    query="SELECT CAST(t.value AS CHAR(10000) CHARACTER SET utf8) as transcript FROM transcripts t
+                            WHERE t.asset_name = '${asset.name}' AND t.status >= 0
+                            GROUP BY t.asset_name ORDER BY t.timestamp DESC">
+                <field column="transcript" name="transcript" />
+            </entity>
+            <entity name="asset_ocr"
+                    transformer="TemplateTransformer,RegexTransformer"
+                    query="SELECT CAST(t.value AS CHAR(10000) CHARACTER SET utf8) as ocr FROM transcripts t
+                            WHERE t.asset_name = '${asset.name}' AND t.status = -1
+                            GROUP BY t.asset_name ORDER BY t.timestamp DESC">
+                <field column="ocr" name="ocr" />
+            </entity>
+
+            <entity name="asset_tags" query="SELECT (SELECT value FROM tags WHERE id = ta.tag_id) as tag
+                                        FROM tags_assets as ta
+                                        LEFT JOIN asset as a ON a.name = ta.asset_name
+                                        WHERE ta.asset_name='${asset.name}'">
+                <field column="tag" name="tag" />
+            </entity>
+        </entity>
+    </document>
+</dataConfig>

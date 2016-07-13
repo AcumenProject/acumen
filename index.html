@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="acumen">
+<head>
+    <meta charset="utf-8">
+    <meta name="fragment" content="!" />
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="{{name}}" content="{{val}}" ng-repeat="(name, val) in acumen.metaTags">
+
+    <title>Acumen - The University of Alabama Libraries' Digital Archives</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/acumen-vendor.css">
+    <link rel="stylesheet" type="text/css" href="/css/acumen-bootstrap.css">
+    <!--<link rel="stylesheet" type="text/css" href="/vendor/mediaelement/mediaelementplayer.css">-->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700|Open+Sans:400,700" rel="stylesheet">
+    <!--<link rel="stylesheet" type="text/css" href="/assets/css/vendor-0.5.18.min.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/assets/css/acumen-0.5.18.min.css">-->
+    <link rel="stylesheet" type="text/css" href="/css/acumen.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
+    <!--<script src="/vendor/respondjs/respond.min.js"></script>-->
+    <![endif]-->
+</head>
+<body>
+<div class="page-wrapper">
+    <header class="acumen-nav navbar navbar-inverse navbar-static-top" role="banner">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#acumen-nav">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Acumen</a>
+            </div>
+
+            <nav class="collapse navbar-collapse" id="acumen-nav">
+                <ul class="nav navbar-nav">
+                    <li><a href="http://guides.lib.ua.edu/hoole-finding-aids" target="_browse_coll">Browse Collections</a></li>
+                    <li><a href="http://www.lib.ua.edu/libraries/hoole/browse-by-category/" target="_browse_cat">Browse Categories</a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="" feedback-modal-button><i class="fa fa-comments"></i> Give us feedback</a></li>
+                    <li><a href="http://guides.lib.ua.edu/c.php?g=39904" target="_help"><i class="fa fa-question-circle"></i> Help</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="loading-wrapper" ng-class="{fixieloader: fixie}"></div>
+
+    <div class="jumbotron home-slice" ng-show="$root.$state.is('home')">
+        <div class="container">
+            <div class="row welcome-container">
+                <div class="col-xs-12 text-center">
+                    <h1>Welcome to Acumen!</h1>
+                    <h4>The University of Alabama Libraries' digital archives explorer.</h4>
+                    Access current student research, digitized historical material, finding aids from the W.S. Hoole Special Collections Library, and more.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-box">
+    </div>
+
+    <div class="content-wrapper container-fluid">
+        <!-- Not IE 8 support. Point them to the legacy interface -->
+        <!--[if lt IE 9]>
+        <div class="ie8-msg well">
+            <h1>Acumen is a great resource for historical material<small>, but we don't support historical web browsers!</small></h1>
+            <div class="lead">Newer browsers are more secure and offer modern features for a better web experience. You're missing out!</div>
+            <h3><a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie-MCM">Click here</a> to upgrade Internet Explorer.</h3>
+            <p>
+                If you're unable to upgrade, you may access <a href="legacy" title="Acumen legacy interface">Acumen's legacy interface here.</a>
+            </p>
+        </div>
+        <![endif]-->
+
+
+        <div ui-view class="row">
+        </div>
+    </div>
+
+    <div class="alert-container" ng-controller="AlertCtrl" ng-show="showAlerts">
+        <alert class="animate-alert" ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    </div>
+</div>
+
+<div class="footer-wrapper text-center">
+    <div class="footer-nav navbar navbar-inverse navbar-static-top" rol="navigation">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                <li><a href="" feedback-modal-button title="Contact Us">Contact Us</a></li>
+                <li><a href="https://www.lib.ua.edu/about/support-ua-libraries/" title="Support UA Libraries">Support UA Libraries</a></li>
+                <li><a href="https://www.lib.ua.edu/about/libraries-policies/" title="Library Policies">Library Policies</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="" disclaimer-modal-button title="Disclaimer">Disclaimer</a></li>
+                <li><a href="legacy" title="Legacy Interface">Legacy Interface</a></li>
+                <li><a href="http://acumenproject.github.io/" title="Release Notes" target="_release">Release Notes <span class="badge">v0.5.18</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="footer-logo">
+        <a href="http://www.ua.edu/" title="University of Alabama">
+            <img src="/assets/images/UA_Square_Logo_4c.png" width="434" height="70" alt="University of Alabama" />
+        </a>
+    </div>
+    <div class="footer-logo">
+        <a href="http://www.lib.ua.edu/" title="University Libraries">
+            <img src="/assets/images/ualib-horizon-logo.png" width="395" height="70" alt="University Libraries" />
+        </a>
+    </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-sanitize.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-animate.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-cookies.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/restangular/1.3.1/restangular.js"></script>
+<!--<script src="/vendor/mediaelement/mediaelement-and-player.js"></script>-->
+<!--<script src="/assets/js/templates/acumen-0.5.18.min.js"></script>-->
+<!--<script src="/assets/js/vendor-0.5.18.min.js"></script>-->
+<!--<script src="/assets/js/acumen-0.5.18.min.js"></script>-->
+<script src="/js/acumen-vendor.js"></script>
+<script src="/js/acumen.js"></script>
+
+</body>
+</html>

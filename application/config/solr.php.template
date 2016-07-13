@@ -1,0 +1,5 @@
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+$config['solr_port'] = SOLR_PORT;
+$config['solr_hostname'] = SOLR_HOSTNAME;
+$config['solr_path'] = ENVIRONMENT == 'live' ? '/solr/SOLR_CORE_LIVE' : (ENVIRONMENT == 'staging' ? '/solr/SOLR_CORE_STAGING' : '/solr/SOLR_CORE_DEV');

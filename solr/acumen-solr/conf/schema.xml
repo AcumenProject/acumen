@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="solr" version="1.1">
+    <types>
+        <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
+        <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+        <!-- A Trie based date field for faster date range queries and date faceting. -->
+        <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+
+        <fieldType name="long" class="solr.LongField" omitNorms="true"/>
+
+        <!-- A text field that only splits on whitespace for exact matching of words -->
+        <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+            <analyzer>
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+            </analyzer>
+        </fieldType>
+
+        <!-- A text field used for language codes and names -->
+        <fieldType name="text_lang" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.SynonymFilterFactory" synonyms="language_code_synonyms.txt" ignoreCase="true" expand="true"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+        <!-- Field for physdesc synonyms -->
+        <fieldType name="extent" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+                <filter class="solr.SynonymFilterFactory" synonyms="extent_synonyms.txt" ignoreCase="true" expand="false"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+
+
+        <!-- A general text field that has reasonable, generic
+         cross-language defaults: it tokenizes with StandardTokenizer,
+	 removes stop words from case-insensitive "stopwords.txt"
+	 (empty by default), and down cases.  At query time only, it
+	 also applies synonyms. -->
+        <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+                <!-- in this example, we will only use synonyms at query time
+                <filter class="solr.SynonymFilterFactory" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
+                -->
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+                <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+        <!-- A text field that uses WordDelimiterFilter to enable splitting and matching of
+        words on case-change, alpha numeric boundaries, and non-alphanumeric chars,
+        so that a query of "wifi" or "wi fi" could match a document containing "Wi-Fi".
+        Synonyms and stopwords are customized by external files, and stemming is enabled.
+        Duplicate tokens at the same position (which may result from Stemmed Synonyms or
+        WordDelim parts) are removed.
+        -->
+        <fieldType name="text_en" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+            <analyzer type="index">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false"/>
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+                <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1" splitOnNumerics="1"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+                <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+                <filter class="solr.PorterStemFilterFactory"/>
+                <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+                <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+                <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1" splitOnNumerics="1"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+                <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+                <filter class="solr.PorterStemFilterFactory"/>
+                <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+        <!-- Less flexible matching,
+         but less false matches.  Probably not ideal for product names,
+         but may be good for SKUs.  Can insert dashes in the wrong place and still match. -->
+        <fieldType name="text_en_splitting_tight" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+            <analyzer>
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false"/>
+                <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt"/>
+                <filter class="solr.WordDelimiterFilterFactory" generateWordParts="0" generateNumberParts="0" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+                <filter class="solr.EnglishMinimalStemFilterFactory"/>
+                <!-- this filter can remove any duplicate tokens that appear at the same position - sometimes
+                             possible with WordDelimiterFilter in conjuncton with stemming. -->
+                <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+            </analyzer>
+        </fieldType>
+    </types>
+    <fields>
+        <field name="_version_" type="long" indexed="true" stored="true"/>
+        <!--field name="discipline" type="text_en" indexed="true" stored="true" multiValued="true" />
+
+        <copyField source="subtitle" dest="subtitle_s" />
+        <field name="subtitle" type="text_en" indexed="true" stored="false" multiValued="true" />
+        <field name="subtitle_s" type="string" maxChars="100" indexed="true" stored="true" multiValued="true" />
+
+        <field name="composer" type="text_en" indexed="true" stored="true" multiValued="true"/>
+        <field name="performer" type="text_en" indexed="true" stored="true" multiValued="true"/>
+        <field name="editor" type="text_en" indexed="true" stored="true" multiValued="true"/>
+        <field name="date_start" type="text_en" indexed="true" stored="true" multiValued="true" />
+        <field name="date_end" type="text_en" indexed="true" stored="true" multiValued="true" /-->
+
+        <field name="file_name" type="string" indexed="true" stored="true"/>
+        <field name="id" type="string" indexed="true" stored="true" required="true"/>
+        <field name="parent_id" type="string" indexed="true" stored="true"/>
+        <field name="repo_loc" type="string" indexed="true" stored="true" required="true"/>
+        <field name="parent_loc" type="string" indexed="true" stored="true"/>
+        <field name="type" type="text_en" indexed="true" stored="true" multiValued="true"/>
+        <field name="link_type" type="string" indexed="true" stored="true"/>
+        <field name="asset_type" type="text_en" indexed="true" stored="true"/>
+        <field name="file_type" type="string" indexed="true" stored="true" multiValued="true"/>
+
+        <field name="thumbnail" type="string" indexed="true" stored="true" multiValued="true" />
+
+        <field name="display_date" type="text_en" indexed="true" stored="true" />
+
+        <field name="date" type="text_en" indexed="true" stored="true" multiValued="true" />
+
+        <!--copyField source="creator" dest="name" />
+        <copyField source="composer" dest="name" />
+        <copyField source="performer" dest="name" />
+        <copyField source="editor" dest="name" /-->
+
+        <copyField source="name" dest="name_s" />
+        <field name="name" type="text_general" indexed="true" stored="false" multiValued="true"/>
+        <field name="name_s" type="string" indexed="true" stored="true" multiValued="true"/>
+
+        <copyField source="alt_title" dest="title" />
+        <copyField source="uniform_title" dest="title" />
+        <copyField source="translated_title" dest="title" />
+
+        <copyField source="title" dest="title_s" maxChars="125" />
+        <field name="title" type="text_en" indexed="true" stored="false" multiValued="true" />
+        <field name="title_s" type="string" indexed="true" stored="true" multiValued="true" />
+
+        <copyField source="subject" dest="subject_s" maxChars="300" />
+        <field name="subject" type="text_general" indexed="true" stored="false" multiValued="true" />
+        <field name="subject_s" type="string" indexed="true" stored="true" multiValued="true" />
+
+        <copyField source="genre" dest="genre_s" maxChars="300" />
+        <field name="genre" type="text_general" indexed="true" stored="false" multiValued="true" />
+        <field name="genre_s" type="string" indexed="true" stored="true" multiValued="true" />
+
+        <copyField source="description" dest="description_s" maxChars="300" />
+        <field name="description" type="text_general" indexed="true" stored="false" multiValued="true" />
+        <field name="description_s" type="string" indexed="true" stored="true" multiValued="true" />
+
+        <copyField source="abstract" dest="abstract_s" maxChars="300" />
+        <field name="abstract" type="text_general" indexed="true" stored="false" multiValued="true" />
+        <field name="abstract_s" type="string" indexed="true" stored="true" multiValued="true" />
+
+        <field name="localbroad" type="string" indexed="true" stored="true" multiValued="true" />
+
+        <copyField source="transcript" dest="transcript_s" maxChars="300" />
+        <field name="transcript" type="text_general" indexed="true" stored="true" multiValued="true" />
+        <field name="transcript_s" type="string" indexed="true" stored="true" multiValued="true" />
+
+        <field name="tag" type="text_en" indexed="true" stored="true" multiValued="true"/>
+
+        <dynamicField name="*" type="text_en" indexed="true" stored="true" multiValued="true"/>
+
+        <copyField source="collection" dest="collection_s" />
+        <field name="collection" type="text_general" indexed="true" stored="true" />
+        <field name="collection_s" type="string" indexed="true" stored="true" />
+
+        <copyField source="collection_number" dest="collection_number_s" />
+        <field name="collection_number" type="text_en_splitting_tight" indexed="true" stored="true" omitNorms="true" />
+        <field name="collection_number_s" type="string" indexed="true" stored="true" omitNorms="true" />
+
+        <copyField source="box_number" dest="box_number_s" />
+        <field name="box_number" type="text_en_splitting_tight" indexed="true" stored="true" omitNorms="true" />
+        <field name="box_number_s" type="string" indexed="true" stored="true" omitNorms="true" />
+
+        <copyField source="folder_number" dest="folder_number_s" />
+        <field name="folder_number" type="text_en_splitting_tight" indexed="true" stored="true" omitNorms="true" />
+        <field name="folder_number_s" type="string" indexed="true" stored="true" omitNorms="true" />
+
+        <copyField source="origin_place" dest="origin_place_s" />
+        <field name="origin_place" type="text_en" indexed="true" stored="true" />
+        <field name="origin_place_s" type="string" indexed="true" stored="true" />
+
+        <copyField source="language" dest="language_s" />
+        <field name="language" type="text_lang" indexed="true" stored="true" />
+        <field name="language_s" type="string" indexed="true" stored="true" />
+
+        <copyField source="language_code" dest="language_code_s" />
+        <field name="language_code" type="text_lang" indexed="true" stored="true" />
+        <field name="language_code_s" type="string" indexed="true" stored="true" />
+        
+        <field name="exent" type="extent" indexed="true" stored="false" />
+        <field name="table_of_contents" type="text_en_splitting_tight" indexed="true" stored="false" multiValued="true" />
+
+        <dynamicField name="*_no" type="string" indexed="true" stored="true" multiValued="true"/>
+        <dynamicField name="*_circa" type="string" indexed="true" stored="true" multiValued="true"/>
+        <!--dynamicField name="*_tsf" type="tdate" indexed="true" stored="true" multiValued="true"/-->
+
+        <copyField source="*" dest="textAll" />
+        <field name="textAll" type="text_en" indexed="true" stored="false" multiValued="true" />
+    </fields>
+    <uniqueKey>repo_loc</uniqueKey>
+    <defaultSearchField>textAll</defaultSearchField>
+    <solrQueryParser defaultOperator="AND"/>
+</schema>

@@ -1,0 +1,11 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+$config['acumen_url'] = 'URL';
+$config['acumen_base_path'] = 'BASE_PATH';
+$config['default_thumbnail'] = array(
+					'Archived Collection' => 'assets/images/xml_128.png',
+					'audio' => 'assets/images/audio_icon_128.png',
+					'document' => 'assets/images/pdf_icon_128.png',
+					'video' => 'assets/images/video_icon_128.png'
+				);
+$config['xsl_path'] = FCPATH . 'XSL_DIR';

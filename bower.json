@@ -1,0 +1,27 @@
+{
+  "name": "acumen",
+  "description": "Digital archives explorer",
+  "main": "",
+  "authors": [
+    "Will Jones"
+  ],
+  "license": "ECL-2.0",
+  "keywords": [
+    "Acumen"
+  ],
+  "homepage": "https://github.com/AcumenProject/acumen",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "acumen-api": "AcumenProject/acumen-api",
+    "acumen-ui": "AcumenProject/acumen-ui",
+    "acumen-solr": "AcumenProject/acumen-solr",
+    "acumen-xsl": "AcumenProject/acumen-xsl#^1.0.0"
+  }
+}

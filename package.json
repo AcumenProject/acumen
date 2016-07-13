@@ -1,0 +1,25 @@
+{
+  "name": "acumen",
+  "version": "0.0.0",
+  "description": "Digital archives explorer",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AcumenProject/acumen.git"
+  },
+  "keywords": [
+    "Acumen"
+  ],
+  "author": "Will Jones",
+  "license": "ECL-2.0",
+  "bugs": {
+    "url": "https://github.com/AcumenProject/acumen/issues"
+  },
+  "devDependencies": {
+    "grunt-contrib-copy": "~1.0.0",
+    "load-grunt-tasks": "~1.0.0",
+    "time-grunt": "~1.0.0",
+    "grunt-bump": "~0.3.0",
+    "grunt-contrib-clean": "~0.6.0"
+  }
+}
