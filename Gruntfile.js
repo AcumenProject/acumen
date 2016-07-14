@@ -36,8 +36,8 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: '<%= bower_dir %>',
-                        src: ['acumen-indexer/**/*'],
+                        cwd: '<%= bower_dir %>/acumen-indexer',
+                        src: ['**/*'],
                         dest: 'indexer/'
                     }
                 ]
