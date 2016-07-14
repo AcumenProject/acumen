@@ -6,22 +6,12 @@ module.exports = function(grunt) {
     require('time-grunt')(grunt);
 
     grunt.registerTask('default', ['prepAcumen']);
-    grunt.registerTask('prepAcumen', ['copy:api', 'copy:solr', 'copy:ui', 'copy:xsl']);
+    grunt.registerTask('prepAcumen', ['copy:solr', 'copy:ui']);
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         bower_dir: 'bower_components',
         copy: {
-            api: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: '<%= bower_dir %>/acumen-api/',
-                        src: ['**/*', '!README.md'],
-                        dest: './'
-                    }
-                ]
-            },
             solr: {
                 files: [
                     {
@@ -37,19 +27,18 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: '<%= bower_dir %>',
-                        src: ['acumen-ui/dist/**'],
+                        src: ['acumen-ui/dist/**/*'],
                         dest: 'assets/'
                     }
                 ]
             },
-            xsl: {
+            indexer: {
                 files: [
                     {
                         expand: true,
-                        flatten: true,
                         cwd: '<%= bower_dir %>',
-                        src: ['acumen-xsl/**/*.xsl'],
-                        dest: 'assets/xsl/'
+                        src: ['acumen-indexer/**/*'],
+                        dest: 'indexer/'
                     }
                 ]
             }

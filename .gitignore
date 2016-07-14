@@ -4,6 +4,8 @@ node_modules
 
 # Generic Git Ignore files
 config.xml
+index.php
+index_swap.php
 
 # ignore dev and staging installations in case they are sub directories of live acumen directory
 dev/
