@@ -41,6 +41,14 @@ module.exports = function(grunt) {
                         dest: 'indexer/'
                     }
                 ]
+            },
+            indexHtml: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= bower_dir %>/acumen-ui/',
+                    src: ['dist/index.html'],
+                    dest: 'index.html'
+                }]
             }
         }
     });

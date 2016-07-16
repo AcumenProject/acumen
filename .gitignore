@@ -6,6 +6,7 @@ node_modules
 config.xml
 index.php
 index_swap.php
+.htaccess
 
 # ignore dev and staging installations in case they are sub directories of live acumen directory
 dev/
